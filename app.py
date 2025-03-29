@@ -14,7 +14,6 @@ from deepgram import (
     Microphone,
 )
 from groq import Groq
-from dotenv import load_dotenv
 import requests
 from playsound import playsound
 import logging 
@@ -24,10 +23,9 @@ from utils.topic_to_quiz import *
 # ✅ Configure Logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-# ✅ Load environment variables
-load_dotenv()
-DEEPGRAM_API_KEY = os.getenv("DEEPGRAM_API_KEY")
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+# ✅ Load secret variables
+DEEPGRAM_API_KEY = st.secrets["DEEPGRAM_API_KEY"]
+GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
 
 # ✅ Streamlit Page Configuration
 st.set_page_config(
