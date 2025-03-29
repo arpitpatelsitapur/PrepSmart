@@ -1,1 +1,7 @@
+streamlit==1.44.0
+groq==0.20.0
+playsound==1.2.2
+pandas==1.5.3
+openai==1.65.2
+deepgram-sdk==3.10.1
 
