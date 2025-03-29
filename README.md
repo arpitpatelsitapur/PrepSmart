@@ -55,8 +55,8 @@ Prep-Smart is a **Streamlit-based web application** designed to help users **pre
 
 ### ✅ **1. Clone the Repository**
 ```bash
-git clone https://github.com/your-username/Prep-Smart.git
-cd Prep-Smart
+git clone https://github.com/arpitpatelsitapur/PrepSmart.git
+cd PrepSmart
 ```
 
 ### ✅ **2. Create a Virtual Environment**
