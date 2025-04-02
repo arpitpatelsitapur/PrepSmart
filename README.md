@@ -13,30 +13,26 @@ Prep-Smart is a **Streamlit-based web application** designed to help users **pre
 - **Voice-to-Voice Interviews:** Engage in real-time, interactive interview conversations with **speech-to-text (STT)**, **LLM-generated questions**, and **text-to-speech (TTS)** responses.
 - **Parallel Processing:** The app handles parallel transcription, LLM response generation, and TTS playback using multithreading for a seamless experience.
 <div align="center">
-  <img src="utils/app_logo.png" alt="Logo" width="300">
-</div>
----
-<div align="center">
-  <img src="utils/app1.png" alt="Logo" width="300">
+  <img src="utils/app1.png" alt="Logo" width="500">
 </div>
 ----
 <div align="center">
-  <img src="utils/app2.png" alt="Logo" width="300">
+  <img src="utils/app2.png" alt="Logo" width="500">
 </div>
 ---
 <div align="center">
-  <img src="utils/app3.png" alt="Logo" width="300">
+  <img src="utils/app3.png" alt="Logo" width="500">
 </div>
 <div align="center">
-  <img src="utils/app4.png" alt="Logo" width="300">
-</div>
----
-<div align="center">
-  <img src="utils/app5.png" alt="Logo" width="300">
+  <img src="utils/app4.png" alt="Logo" width="500">
 </div>
 ---
 <div align="center">
-  <img src="utils/app6.png" alt="Logo" width="300">
+  <img src="utils/app5.png" alt="Logo" width="500">
+</div>
+---
+<div align="center">
+  <img src="utils/app6.png" alt="Logo" width="500">
 </div>
 ---
 
