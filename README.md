@@ -162,18 +162,12 @@ README.md                 # Project documentation
 ## 🚀 **Deployment**
 
 ### ✅ **Deploy on Streamlit Cloud**
-1. Create a new Streamlit Cloud app.
-2. Upload the entire project repository.
-3. Add environment variables in secrets:
-   - DEEPGRAM_API_KEY
-   - GROQ_API_KEY
-4. Specify the Python version using runtime.txt.
-5. Deploy the app.
+in progress....................
 
 ---
 
 ## 👥 **Contributors**
-- Arpit Patel – ML and AI Engineer Enthusiast
+- Arpit Patel
 - Contributions are welcome! Feel free to submit a pull request.
 
 ---
