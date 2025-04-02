@@ -1,6 +1,6 @@
 # 📚 **Prep-Smart: Smart Interview Preparation with AI**
-<div align="center" style="background-color: lightgray; padding: 20px; border-radius: 10px;">
-  <img src="utils/app_logo.png" alt="Logo" width="200">
+<div align="center">
+  <img src="utils/app_logo.png" alt="Logo" width="300">
 </div>
 
 ### 🚀 **Empower your interview preparation with AI-powered quizzes and real-time voice-to-voice interactions.**
