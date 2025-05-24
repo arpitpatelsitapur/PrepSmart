@@ -1,8 +1,3 @@
-##########################################################################################################
-# Written by: Arpit Patel
-# Used Documentation of Deepgram, Deepseek and Groq for API uses.
-##########################################################################################################
-
 import streamlit as st
 import os
 import time
@@ -14,18 +9,17 @@ from deepgram import (
     Microphone,
 )
 from groq import Groq
+from dotenv import load_dotenv
 import requests
 from playsound import playsound
 import logging 
 from utils.topic_page import *
 from utils.topic_to_quiz import *
 
-# ✅ Configure Logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-
-# ✅ Load secret variables
-DEEPGRAM_API_KEY = st.secrets["DEEPGRAM_API_KEY"]
-GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
+# ✅ Load environment variables
+load_dotenv()
+DEEPGRAM_API_KEY = os.getenv("DEEPGRAM_API_KEY")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 # ✅ Streamlit Page Configuration
 st.set_page_config(
@@ -58,12 +52,56 @@ if 'page' not in st.session_state:
         'start_time': 0
     })
 
+def display_question():
+    idx = st.session_state.current_question
+    row = st.session_state.quiz_df.iloc[idx]
+
+    # Use the original order of options
+    options = [row['option1'], row['option2'], row['option3'], row['option4']]
+
+    with st.expander(f"Question {idx + 1}", expanded=True):  # Display 1-based
+        st.markdown(f"#### {row['question']}")
+        
+        # Save with idx + 1 to align with display numbering
+        st.session_state.user_answers[idx] = st.radio(
+            "Select an answer:", options,
+            index=options.index(st.session_state.user_answers.get(idx, options[0])),
+            key=f"q{idx}"  
+        )
+
 ##########################################################################################################
 # part 2 : Voice to voice interaction
 # STT : Deepgram
 # LLM : GROQ
 # TTS : Deepgram
 ##########################################################################################################
+
+# ✅ Gradual Display Inside the Div Block
+def gradual_display_inside_div(text, role, delay=0.15):
+    """Display text word by word inside the div block."""
+    role_icon = "👤" if role == "user" else "🤖"
+    color = "#f1f1f1" if role == "user" else "#d1e7dd"
+
+    placeholder = st.empty()
+    current_text = ""
+    words = text.split()
+
+    for word in words:
+        if current_text:
+            current_text += " " + word
+        else:
+            current_text = word
+
+        # ✅ Display the entire div block with gradually updating text inside
+        placeholder.markdown(
+            f"""
+            <div style='background-color: {color}; border-radius: 10px; padding: 15px; margin-bottom: 10px;'>
+                <strong>{role_icon}:</strong> {current_text}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        time.sleep(delay)
 
 # ✅ Function for Deepgram TTS (run in a separate thread)
 def text_to_speech(text: str, filename: str = "response_audio.wav"):
@@ -78,9 +116,8 @@ def text_to_speech(text: str, filename: str = "response_audio.wav"):
     try:
         response = requests.post(url, headers=headers, json=payload)
         if response.status_code != 200:
-            logging.error(f"Error: {response.status_code} - {response.text}")
+            print("Error:", response.status_code, response.text)
             return
-
         with open(filename, 'wb') as audio_file:
             audio_file.write(response.content)
 
@@ -88,7 +125,7 @@ def text_to_speech(text: str, filename: str = "response_audio.wav"):
         playsound(filename)
 
     except Exception as e:
-        logging.error(f"Error handling audio: {str(e)}")
+        st.error(f"Error handling audio: {str(e)}")
 
 
 # ✅ Parallel Execution Function
@@ -116,14 +153,13 @@ def speech_to_text():
     try:
         # Initialize Deepgram client
         deepgram = DeepgramClient(api_key=DEEPGRAM_API_KEY)
-        logging.info("✅ Initialized Deepgram Client")
 
         # Create a websocket connection
         dg_connection = deepgram.listen.websocket.v("1")
 
         # Event handlers
         def on_open(self, open, **kwargs):
-            logging.info("🔗 Connection Opened")
+            pass
 
         def on_message(self, result, **kwargs):
             nonlocal is_finals  # ✅ Use 'nonlocal' to access the enclosing scope
@@ -133,32 +169,32 @@ def speech_to_text():
                 return
 
             if result.is_final:
-                logging.info(f"✅ Final: {sentence}")
+                print(f"✅ Final: {sentence}")
                 
                 # ✅ Append each final sentence to the list
                 is_finals.append(sentence)
 
                 if result.speech_final:
                     final_utterance = " ".join(is_finals)  # ✅ Combine all final sentences
-                    logging.info(f"🗣️ Speech Final: {final_utterance}")
+                    print(f"🗣️ Speech Final: {final_utterance}")
 
         def on_metadata(self, metadata, **kwargs):
-            logging.info("ℹ️ Metadata received")
+            pass
 
         def on_speech_started(self, speech_started, **kwargs):
-            logging.info("🎙️ Speech started")
+            pass
 
         def on_utterance_end(self, utterance_end, **kwargs):
-            logging.info("🔚 Utterance ended")
+            pass
 
         def on_close(self, close, **kwargs):
-            logging.info("🔒 Connection closed")
+            pass
 
         def on_error(self, error, **kwargs):
-            logging.error(f"❌ Error: {error}")
+            pass
 
         def on_unhandled(self, unhandled, **kwargs):
-            logging.warning(f"⚠️ Unhandled event: {unhandled}")
+            pass
 
         # Register event handlers
         dg_connection.on(LiveTranscriptionEvents.Open, on_open)
@@ -188,17 +224,17 @@ def speech_to_text():
         addons = {"no_delay": "true"}
 
         if dg_connection.start(options, addons=addons) is False:
-            logging.error("❌ Failed to connect to Deepgram")
+            print("❌ Failed to connect to Deepgram")
             return
 
+        # print("\n🎤 Press Enter to stop recording...\n")
+        
         # Open a microphone stream
         microphone = Microphone(dg_connection.send)
         microphone.start()
-
-        logging.info("🎤 Listening...")
-
-        # Simulate recording for a while (e.g., 15 seconds)
-        time.sleep(15)
+        
+        # Simulate recording for a while (e.g., 10 seconds)
+        time.sleep(100)  # Wait for 15 seconds to simulate recording
 
         # Stop the microphone and connection
         microphone.finish()
@@ -213,7 +249,7 @@ def speech_to_text():
         return final_transcript
 
     except Exception as e:
-        logging.error(f"❌ Error: {e}")
+        print(f"❌ Error: {e}")
         return ""
 
 
@@ -225,6 +261,7 @@ conversation_history = [
         You are a professional technical recruiter conducting interviews. 
         Ask only short and concise technical questions, similar to real-life interviews. 
         Each question should be direct, clear, and focused on a single concept or problem.
+        Keep the questions to 1-2 sentences maximum.
         Before asking the next question, give feedback on the previous answer.
         """
     }
@@ -253,7 +290,6 @@ def generate_response(user_input, model="llama-3.3-70b-versatile", temperature=0
     except Exception as e:
         logging.error(f"❌ LLM Error: {e}")
         return "Error generating LLM response."
-
 
 ##########################################################################################################
 # APP UI code
